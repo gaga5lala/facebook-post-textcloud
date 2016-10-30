@@ -10,19 +10,24 @@ print("start...")
 # 達到更好的中文斷詞效果
 jieba.set_dictionary('dict.txt.big')
 
-FB_TOKEN = "EAACEdEose0cBAD4E8aIdyOQtUEV5lSgtxUEcmkKIklqbDvi9MjTJ1kPnw74V0Xid1muHVTLh8iweCo7v67PHD0ZAbXtYM3V7JhjZBXYS0S2RS7mQxpkEWwtDIlsJ6fvTv7tKhH90kwB42EKBZA97iGLG854DWqzRiZAdwFG6NQZDZD"
+FB_TOKEN = "EAACEdEose0cBAAmHDUaUb0otyouBq1B4p4NZCoZC4CjTmbVwrMAny3b4ZAZChO9zsUYOrIoHZBEFOep0WUMZA8IsDGZBbWwYryGyQC9NG8LdjZC69kbo1hSSkYNtVsmZAhnT9AO5BisR96ET8Rrn2ZBRDKWhLZACpkYQz0fMnPKSZBZC69wZDZD"
 
 token = FB_TOKEN or input("請輸入 FB token")
 
-req = requests.get("https://graph.facebook.com/v2.8/me?fields=posts&limit=100&access_token=" + token)
+req = requests.get("https://graph.facebook.com/v2.8/me/posts?limit=100&access_token=" + token)
 
 js = json.loads(req.text)
 coupus = []
 
-# TODO: paging, current only fetch first 25
-for post in js["posts"]["data"]:
-    if "message" in post:
-        coupus  += jieba.cut(post["message"])
+# TODO: enhance paging control, eg. last 5 page
+while "paging" in js:
+    for post in js["data"]:
+        if "message" in post:
+            coupus  += jieba.cut(post["message"])
+
+    req = requests.get(js["paging"]["next"])
+    print("## next page\n")
+    js = json.loads(req.text)
 
 dic = {}
 for ele in coupus:

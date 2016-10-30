@@ -6,7 +6,7 @@ RUN \
   apt-get clean
 
 RUN \
-  pip install jieba wordcloud
+  pip install jieba wordcloud requests
 
 COPY data/ /usr/local/lib/python2.7/site-packages/jieba
 COPY data/extra_dict /usr/local/lib/python2.7/site-packages/jieba

@@ -2,7 +2,7 @@ FROM python:2.7-slim
 
 RUN \
   apt-get update && \
-  apt-get install -y wget vim && \
+  apt-get install -y wget vim build-essential && \
   apt-get clean
 
 RUN \

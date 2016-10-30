@@ -5,24 +5,24 @@ import json
 import jieba
 import operator
 
+print("start...")
+
 # 達到更好的中文斷詞效果
 jieba.set_dictionary('dict.txt.big')
 
-# TODO: fb token
-req = requests.get("https://graph.facebook.com/v2.8/10201977955963715/posts?limit=25&until=1467088017&__paging_token=enc_AdBL5uZBNcSQ7XN6CGxDVPxbnJgF67jEZBZBAyKkZC7z00sZCMkIHXIkFudBZBwyv73RKig9pwk36IS5RllrwoWLuf6aTL&access_token=EAACEdEose0cBAOSX9RCyJyuqs801mf8q6B0KP6T0zT231U5wqy2yQRDEeRuwoUsOUHyRQXw5MGpHSZBHBQsys10j8vIBHvFafOsaZB2BWB3ZCxDqbsAvmVshZCpXTRPeehyNKZCN0QM1lHzqcRZBdy01XciBBetLxOTr3efK9aOQZDZD")
+FB_TOKEN = "EAACEdEose0cBAD4E8aIdyOQtUEV5lSgtxUEcmkKIklqbDvi9MjTJ1kPnw74V0Xid1muHVTLh8iweCo7v67PHD0ZAbXtYM3V7JhjZBXYS0S2RS7mQxpkEWwtDIlsJ6fvTv7tKhH90kwB42EKBZA97iGLG854DWqzRiZAdwFG6NQZDZD"
+
+token = FB_TOKEN or input("請輸入 FB token")
+
+req = requests.get("https://graph.facebook.com/v2.8/me?fields=posts&limit=100&access_token=" + token)
+
 js = json.loads(req.text)
 coupus = []
 
 # TODO: paging, current only fetch first 25
-
-for post in js["data"]:
+for post in js["posts"]["data"]:
     if "message" in post:
         coupus  += jieba.cut(post["message"])
-
-# print coupus
-
-# use
-# execfile("/usr/local/lib/python2.7/site-packages/jieba/code/fb.py")
 
 dic = {}
 for ele in coupus:
@@ -36,8 +36,12 @@ sorted_word = sorted(dic.items(), key = operator.itemgetter(1), reverse=True)
 filename = "fb_post.txt"
 file = open(filename, "w")
 
+words = ""
+
 for ele in sorted_word:
     if len(ele[0]) >= 2:
-        print ele[0], ele[1] && file.write ele[0], ele[1]
+        print ele[0], ele[1]
+        words += "{0} {1}\n".format(ele[0].encode("utf-8"), ele[1])
 
+file.write(words)
 file.close()
